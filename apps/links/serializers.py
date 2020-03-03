@@ -5,7 +5,7 @@ from .models import Link
 HUMAN_DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S %Z'
 
 
-class CreatePostSerializer(serializers.ModelSerializer):
+class CreateLinkSerializer(serializers.ModelSerializer):
     """
     Serializer for saving a Link
     Required fields: user, link

@@ -8,7 +8,7 @@ class Link(models.Model):
         on_delete=models.CASCADE,
         related_name='links',
     )
-    link = models.CharField('link', max_length=200, blank=True)
+    link = models.CharField('link', max_length=200)
     status = models.IntegerField('status')
     date_added = models.DateTimeField('date added', auto_now_add=True)
 
