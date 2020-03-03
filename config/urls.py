@@ -3,6 +3,7 @@ from django.urls import path, include
 
 v1_urls = [
     path('v1/', include('apps.authentication.urls')),
+    path('v1/', include('apps.links.urls')),
 ]
 
 urlpatterns = [
