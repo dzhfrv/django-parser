@@ -24,7 +24,7 @@ class LinkResource(viewsets.ViewSet):
         serializer = serializers.CreatePostSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def save(self, request):
+    def create(self, request):
         """
         POST /links/
         Save a new link
@@ -33,8 +33,8 @@ class LinkResource(viewsets.ViewSet):
         """
         serializer = serializers.CreatePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        post = serializer.save(author=request.user)
-        return Response({'id': post.id}, status=status.HTTP_201_CREATED)
+        link = serializer.save(user=request.user)
+        return Response({'id': link.id}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):
         """
