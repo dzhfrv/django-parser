@@ -21,7 +21,7 @@ class LinkResource(viewsets.ViewSet):
         :return: List of all links
         """
         queryset = Link.objects.all()
-        serializer = serializers.CreatePostSerializer(queryset, many=True)
+        serializer = serializers.CreateLinkSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -31,7 +31,7 @@ class LinkResource(viewsets.ViewSet):
         :param request:
         :return: id of created link
         """
-        serializer = serializers.CreatePostSerializer(data=request.data)
+        serializer = serializers.CreateLinkSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         link = serializer.save(user=request.user)
         return Response({'id': link.id}, status=status.HTTP_201_CREATED)
