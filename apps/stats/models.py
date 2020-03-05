@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+
 from apps.links.models import Link
 
 
@@ -14,4 +15,3 @@ class Stats(models.Model):
     class Meta:
         verbose_name = 'link'
         verbose_name_plural = 'links'
-
