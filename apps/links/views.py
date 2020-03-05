@@ -1,9 +1,12 @@
-from rest_framework import viewsets, status
+import django_rq
+from rest_framework import status, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.links import serializers
+
+from .jobs import url_processing
 from .models import Link
 
 
@@ -31,9 +34,18 @@ class LinkResource(viewsets.ViewSet):
         :param request:
         :return: id of created link
         """
+        link = Link.objects.filter(user=request.user,
+                                   link=request.data['link'])
+        if link:
+            return Response(
+                {'detail': 'Link has already used for user'},
+                status=status.HTTP_400_BAD_REQUEST)
+
         serializer = serializers.CreateLinkSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         link = serializer.save(user=request.user)
+        django_rq.enqueue(url_processing, link)
+
         return Response({'id': link.id}, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):

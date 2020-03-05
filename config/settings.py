@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_rq',
+
     'apps.user',
     'apps.links',
     'apps.stats',
@@ -123,11 +125,18 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(
-        minutes=int(os.environ.get('ACCESS_TOKEN_LIFETIME', 5))),
+        minutes=int(os.environ.get('ACCESS_TOKEN_LIFETIME', 55))),
     'REFRESH_TOKEN_LIFETIME': timedelta(
-        days=int(os.environ.get('REFRESH_TOKEN_LIFETIME', 7))),
+        days=int(os.environ.get('REFRESH_TOKEN_LIFETIME', 75))),
     'SLIDING_TOKEN_LIFETIME': timedelta(
-        minutes=int(os.environ.get('SLIDING_TOKEN_LIFETIME', 5))),
+        minutes=int(os.environ.get('SLIDING_TOKEN_LIFETIME', 55))),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(
-        days=int(os.environ.get('SLIDING_TOKEN_REFRESH_LIFETIME', 7))),
+        days=int(os.environ.get('SLIDING_TOKEN_REFRESH_LIFETIME', 75))),
+}
+
+RQ_QUEUES = {
+    'default': {
+        'URL': 'redis://localhost:6379/0',
+        'DEFAULT_TIMEOUT': 500,
+    }
 }
