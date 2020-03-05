@@ -1,6 +1,6 @@
 ## Parser - Django, Drf, Django-rq, PostgreSQL, React.js, docker.
 #### Dev flow
-1.create virtual environment: `python3 python3 -m venv .env`
+1. create virtual environment: `python3 python3 -m venv .env`
 2. install requirements: `pip install --upgrade -r requirements.txt`
 3. apply migrations: `python manage.py migrate`
 4. Run redis: `make redis-docker`
