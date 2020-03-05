@@ -8,3 +8,7 @@ django-rq==2.3.0
 redis==3.4.1
 rq==1.2.2
 psycopg2-binary==2.8.4
+certifi==2019.11.28
+chardet==3.0.4
+idna==2.9
+requests==2.23.0
