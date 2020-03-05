@@ -15,7 +15,7 @@ class Link(models.Model):
         on_delete=models.CASCADE,
         related_name='links',
     )
-    link = models.CharField('link', max_length=200)
+    link = models.URLField('link', max_length=200)
     status = models.PositiveSmallIntegerField(choices=STATUSES, default=0)
     date_added = models.DateTimeField('date added', auto_now_add=True)
 
