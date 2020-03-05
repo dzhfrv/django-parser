@@ -46,5 +46,5 @@ class LinkResource(viewsets.ViewSet):
         """
         queryset = Link.objects.all()
         user = get_object_or_404(queryset, pk=pk)
-        serializer = serializers.CreatePostSerializer(user)
+        serializer = serializers.CreateLinkSerializer(user)
         return Response(serializer.data)
