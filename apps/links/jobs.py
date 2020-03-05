@@ -1,5 +1,4 @@
 import time
-import json
 import requests
 
 from apps.stats.models import Stats
@@ -14,11 +13,10 @@ def url_processing(link):
     page = requests.get(link.link).content
     soup = BeautifulSoup(page, 'html.parser')
     tags = [tag.name for tag in soup.findAll(True)]
-    data = Counter(tags)
-    json_data = json.dumps(data)
-    print(type(json_data))
-    print(json_data)
-    # Stats.objects.create(url=link, tags=json_data)
+
+    # postgres JSONField requires dict-formatted data
+    data = dict(Counter(tags))
+    Stats.objects.create(url=link, tags=data)
 
     link.status = 1 # processing
     link.save()
