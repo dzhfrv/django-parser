@@ -1,4 +1,4 @@
-##Parser - Django, Drf, Django-rq, PostgreSQL, 
+## Parser - Django, Drf, Django-rq, PostgreSQL, 
 #### Dev flow
 1.create virtual environment: `python3 python3 -m venv .env`
 2. install requirements: `pip install --upgrade -r requirements.txt
