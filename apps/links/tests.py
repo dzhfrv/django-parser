@@ -3,7 +3,7 @@ from rest_framework.test import APIClient
 
 from apps.authentication.tests import BaseTestClass, create_user
 from .models import Link
-from .serializers import CreatePostSerializer
+from .serializers import CreateLinkSerializer
 
 
 class TestLinkResource(BaseTestClass):
@@ -37,7 +37,7 @@ class TestLinkResource(BaseTestClass):
     def test_get_all_links_success(self):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        expected = CreatePostSerializer(
+        expected = CreateLinkSerializer(
             Link.objects.all(),
             many=True).data
         self.assertEqual(resp.json(), expected)
@@ -70,7 +70,7 @@ class TestLinkResource(BaseTestClass):
     def test_get_link_success(self):
         resp = self.client.get(f'{self.endpoint}{self.link.id}/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        expected = CreatePostSerializer(
+        expected = CreateLinkSerializer(
             Link.objects.get(pk=self.link.pk)).data
         self.assertEqual(resp.json(), expected)
 
