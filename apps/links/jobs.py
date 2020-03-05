@@ -1,5 +1,8 @@
 import time
+import json
 import requests
+
+from apps.stats.models import Stats
 
 from collections import Counter
 
@@ -9,13 +12,13 @@ from bs4 import BeautifulSoup
 def url_processing(link):
     print('Start parsing')
     page = requests.get(link.link).content
-    # print('PAGE', page)
     soup = BeautifulSoup(page, 'html.parser')
     tags = [tag.name for tag in soup.findAll(True)]
     data = Counter(tags)
-    print(data)
-    # soup.prettify()
-    # document = soup.html.find_all()
+    json_data = json.dumps(data)
+    print(type(json_data))
+    print(json_data)
+    # Stats.objects.create(url=link, tags=json_data)
 
     link.status = 1 # processing
     link.save()
