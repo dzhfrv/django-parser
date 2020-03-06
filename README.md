@@ -1,4 +1,4 @@
-## Parser - Django, Drf, Django-rq, PostgreSQL, React.js, docker.
+## Parser - Django, DRF, Django-rq, PostgreSQL
 ### Dev flow
 ---
 #### Project setup
@@ -7,7 +7,7 @@
 3. apply migrations: `python manage.py migrate`(this step goes after database setup mentioned below)
 4. Run redis: `make redis-docker`
 5. Run RQ worker: `make worker`
-6. Run django: `python manage.py runserver
+6. Run django: `python manage.py runserver`
 ---
 #### Database setup
 PostgreSQL connecting in config.settings
@@ -23,3 +23,7 @@ DATABASES = {
     }
 }
 ```
+---
+#### TODO
+1. React.js
+2. Dockerize app
