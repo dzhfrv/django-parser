@@ -7,21 +7,44 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Link',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('link', models.CharField(max_length=200, verbose_name='link')),
-                ('status', models.PositiveSmallIntegerField(choices=[(0, 'not processing'), (1, 'processing'), (2, 'error in processing'), (3, 'processed')], default=0)),
-                ('date_added', models.DateTimeField(auto_now_add=True, verbose_name='date added')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'link',
+                    models.CharField(max_length=200, verbose_name='link'),
+                ),
+                (
+                    'status',
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            (0, 'not processing'),
+                            (1, 'processing'),
+                            (2, 'error in processing'),
+                            (3, 'processed'),
+                        ],
+                        default=0,
+                    ),
+                ),
+                (
+                    'date_added',
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name='date added'
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'link',
-                'verbose_name_plural': 'links',
-            },
+            options={'verbose_name': 'link', 'verbose_name_plural': 'links',},
         ),
     ]

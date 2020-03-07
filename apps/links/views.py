@@ -15,6 +15,7 @@ class LinkResource(viewsets.ViewSet):
     Resource for working with posts
     Authentication is required
     """
+
     permission_classes = (IsAuthenticated,)
 
     def list(self, request):
@@ -23,7 +24,7 @@ class LinkResource(viewsets.ViewSet):
         :param request:
         :return: List of all links
         """
-        queryset = Link.objects.all()
+        queryset = Link.objects.filter(user=request.user)
         serializer = serializers.CreateLinkSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -34,12 +35,14 @@ class LinkResource(viewsets.ViewSet):
         :param request:
         :return: id of created link
         """
-        link = Link.objects.filter(user=request.user,
-                                   link=request.data['link'])
+        link = Link.objects.filter(
+            user=request.user, link=request.data['link']
+        )
         if link:
             return Response(
                 {'detail': 'Link has already used for user'},
-                status=status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         serializer = serializers.CreateLinkSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -56,7 +59,7 @@ class LinkResource(viewsets.ViewSet):
         :param pk: link id
         :return: Detail post info
         """
-        queryset = Link.objects.all()
+        queryset = Link.objects.filter(user=request.user)
         user = get_object_or_404(queryset, pk=pk)
         serializer = serializers.CreateLinkSerializer(user)
         return Response(serializer.data)

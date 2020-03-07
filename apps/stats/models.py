@@ -6,9 +6,7 @@ from apps.links.models import Link
 
 class Stats(models.Model):
     url = models.ForeignKey(
-        Link,
-        on_delete=models.CASCADE,
-        related_name='stats',
+        Link, on_delete=models.CASCADE, related_name='stats',
     )
     tags = JSONField('tags')
 

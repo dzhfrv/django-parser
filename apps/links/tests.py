@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.authentication.tests import BaseTestClass, create_user
+
 from .models import Link
 from .serializers import CreateLinkSerializer
 
@@ -15,26 +16,19 @@ class TestLinkResource(BaseTestClass):
     def setUp(self):
         super().setUp()
         self.link = Link.objects.create(
-            user=self.base_user,
-            link='https://example.com',
-            status=1,
+            user=self.base_user, link='https://example.com',
         )
         Link.objects.create(
-            user=create_user('new@email.com'),
-            link='https://example2.com',
-            status=1,
+            user=create_user('new@email.com'), link='https://example2.com',
         )
         self.new_link = {
             'link': 'https://new-example.com',
-            'status': 1,
         }
         self.incorrect_link = {
             'link': 'https://new',
-            'status': 1,
         }
         self.empty_link = {
             'link': '',
-            'status': 1,
         }
 
     def test_get_all_links_unauth(self):
@@ -42,12 +36,12 @@ class TestLinkResource(BaseTestClass):
         resp = anonimus.get(self.endpoint)
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_get_all_links_success(self):
+    def test_get_all_user_links_success(self):
         resp = self.client.get(self.endpoint)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         expected = CreateLinkSerializer(
-            Link.objects.all(),
-            many=True).data
+            Link.objects.filter(user=self.base_user), many=True
+        ).data
         self.assertEqual(resp.json(), expected)
 
     def test_add_link_unauth(self):
@@ -61,11 +55,6 @@ class TestLinkResource(BaseTestClass):
         self.assertEqual(Link.objects.count(), 3)
         self.assertEqual(resp.json(), {'id': Link.objects.last().id})
 
-    def test_create_link_status_type(self):
-        self.new_link['status'] = 'text'
-        resp = self.client.post(self.endpoint, self.new_link)
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-
     def test_get_link_unauth(self):
         anonimus = APIClient()
         resp = anonimus.get(f'{self.endpoint}{self.link.id}/')
@@ -78,21 +67,34 @@ class TestLinkResource(BaseTestClass):
     def test_get_link_success(self):
         resp = self.client.get(f'{self.endpoint}{self.link.id}/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        expected = CreateLinkSerializer(
-            Link.objects.get(pk=self.link.pk)).data
+        expected = CreateLinkSerializer(Link.objects.get(pk=self.link.pk)).data
         self.assertEqual(resp.json(), expected)
+
+    def test_get_other_user_link(self):
+        resp = self.client.post(self.endpoint, self.new_link)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        link_id = resp.json()['id']
+
+        resp = self.second_client.get(f'{self.endpoint}{link_id}/')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_link(self):
         resp = self.client.post(f'{self.endpoint}{self.link.id}/')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_invalid_link(self):
+    def test_create_invalid_link(self):
         resp = self.client.post(self.endpoint, self.incorrect_link)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_empty_link(self):
+    def test_create_empty_link(self):
         resp = self.client.post(self.endpoint, self.empty_link)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-
-
+    def test_add_duplicate_link(self):
+        resp = self.client.post(self.endpoint, self.new_link)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        resp = self.client.post(self.endpoint, self.new_link)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            resp.json(), {'detail': 'Link has already used for user'}
+        )

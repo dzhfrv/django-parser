@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": ".env/bin/python",
+    "liveshare.allowGuestDebugControl": true,
+    "liveshare.allowGuestTaskControl": true
+}

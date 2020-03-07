@@ -4,3 +4,6 @@ redis-docker:
 worker:
 	python manage.py rqworker default
 
+clean:
+	black -l 79 -S apps/
+	isort -rc apps/
