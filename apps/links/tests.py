@@ -28,6 +28,14 @@ class TestLinkResource(BaseTestClass):
             'link': 'https://new-example.com',
             'status': 1,
         }
+        self.incorrect_link = {
+            'link': 'https://new',
+            'status': 1,
+        }
+        self.empty_link = {
+            'link': '',
+            'status': 1,
+        }
 
     def test_get_all_links_unauth(self):
         anonimus = APIClient()
@@ -77,3 +85,12 @@ class TestLinkResource(BaseTestClass):
     def test_update_link(self):
         resp = self.client.post(f'{self.endpoint}{self.link.id}/')
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_invalid_link(self):
+        resp = self.client.post(self.endpoint, self.incorrect_link)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_empty_link(self):
+        resp = self.client.post(self.endpoint, self.empty_link)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
