@@ -60,9 +60,6 @@ class TestRegistrationEndpoint(APITestCase):
         resp = self.client.post(self.endpoint, self.user_data)
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         self.assertEqual(get_user_model().objects.count(), 1)
-        self.assertNotEqual(
-            get_user_model().objects.get(pk=1).password,
-            self.user_data['password'])
 
     def test_create_duplicate_user(self):
         resp = self.client.post(self.endpoint, self.user_data)
