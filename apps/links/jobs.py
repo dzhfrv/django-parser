@@ -1,56 +1,39 @@
-import requests
-from urllib3.exceptions import MaxRetryError
-from urllib.error import URLError, HTTPError
-from apps.stats.models import Stats
-
+import logging
 from collections import Counter
 
+import requests
 from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
+
+from apps.stats.models import Stats
+
+logger = logging.getLogger(__name__)
+
+
+def parse_tags(url: str) -> dict:
+    try:
+        page = requests.get(url)
+        if page.status_code != 200:
+            logger.error(f'{url} is {page.status_code}')
+            return None
+    except RequestException as error:
+        logger.error(error)
+        return None
+    else:
+        soup = BeautifulSoup(page.content, 'html.parser')
+        tags = [tag.name for tag in soup.findAll(True)]
+        data = dict(Counter(tags))
+        return data
 
 
 def url_processing(link):
-    try:
-        page = requests.get(link.link).content
-        if page:
-            print('Start parsing')
-            link.status = 1  # processing
-            link.save()
-            soup = BeautifulSoup(page, 'html.parser')
-            tags = [tag.name for tag in soup.findAll(True)]
-            data = dict(Counter(tags))
-            Stats.objects.create(url=link, tags=data)
-            print(f'Parsing has ended for {link.link}')
-            link.status = 3 # processed
-            link.save()
-    except HTTPError as e:
-        print('Error code: ', e.code)
-    except URLError as e:
-        print('Reason: ', e.reason)
-    except MaxRetryError as e:
-        print('Error Error', e)
-    except requests.exceptions.ConnectionError as e:
-        print('Connection Error', e)
-    link.status = 2  # error in processing
-    link.save()
+    link.change_status('processing')
+    data = parse_tags(link.link)
 
-    # print('Start parsing')
-    # link.status = 1  # processing
-    # link.save()
-    # page = requests.get(link.link).content
-    # response = requests.get(link.link)
-    # # print(response)
-    # if response.status_code == 200:
-    #     soup = BeautifulSoup(page, 'html.parser')
-    #     tags = [tag.name for tag in soup.findAll(True)]
-    #
-    #     # postgres JSONField requires dict-formatted data
-    #     data = dict(Counter(tags))
-    #     Stats.objects.create(url=link, tags=data)
-    #     print(f'Parsing has ended for {link.link}')
-    #
-    #     link.status = 3 # processed
-    #     link.save()
-    # else:
-    #     link.status = 2  # error in processing
-    #     link.save()
-    #     raise ValueError(f'Response Status Code - {response.status_code}')
+    if data is None:
+        link.change_status('error')
+        return
+
+    Stats.objects.create(url=link, tags=data)
+    logger.info(f'Stat has saved for link: {link.pk}')
+    link.change_status('processed')

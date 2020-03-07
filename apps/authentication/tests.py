@@ -1,16 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
 def create_user(email='test@user.com', password='123'):
     """Shortcut for quick user creation"""
     return get_user_model().objects.create_user(
-        email=email,
-        password=password,
-        first_name='Jhon',
-        last_name='Doe'
+        email=email, password=password, first_name='Jhon', last_name='Doe'
     )
 
 
@@ -34,11 +31,19 @@ class BaseTestClass(APITestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.base_user = create_user()
+        cls.second_user = create_user('test2@user.com')
         cls.user_token = get_tokens_for_user(cls.base_user)
+        cls.second_token = get_tokens_for_user(cls.second_user)
 
     def setUp(self):
         super().setUp()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.user_token["access"]}')
+        self.second_client = APIClient()
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.user_token["access"]}'
+        )
+        self.second_client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.second_token["access"]}'
+        )
 
 
 class TestRegistrationEndpoint(APITestCase):
@@ -84,7 +89,9 @@ class TestRegistrationEndpoint(APITestCase):
 
         resp = self.client.post(self.endpoint, self.user_data)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(resp.json(), {'password': ['This field is required.']})
+        self.assertEqual(
+            resp.json(), {'password': ['This field is required.']}
+        )
 
 
 class TestAuthLogin(APITestCase):
@@ -110,7 +117,8 @@ class TestAuthLogin(APITestCase):
     def test_login_user_not_existed(self):
         resp = self.client.post(
             self.endpoint,
-            data={'email': 'base@user.com', 'password': 'pass123'})
+            data={'email': 'base@user.com', 'password': 'pass123'},
+        )
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('access', resp.json())
         self.assertNotIn('refresh', resp.json())
@@ -131,9 +139,7 @@ class TestAuthTokenRefresh(APITestCase):
         }
 
     def test_token_refresh_success(self):
-        resp = self.client.post(
-            '/api/v1/auth/login/',
-            data=self.user_cred)
+        resp = self.client.post('/api/v1/auth/login/', data=self.user_cred)
         refresh_token = resp.json()['refresh']
         access_token = resp.json()['access']
 
