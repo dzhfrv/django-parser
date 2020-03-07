@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
 
+import Registration from "./auth/registration";
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +18,9 @@ class App extends Component {
 
   render() {
     return (
-     <div>Hello</div>
+     <div>Hello
+          <Registration />
+     </div>
     );
   }
 }
