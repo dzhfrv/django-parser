@@ -94,3 +94,5 @@ class TestLinkResource(BaseTestClass):
         resp = self.client.post(self.endpoint, self.empty_link)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
+
+
