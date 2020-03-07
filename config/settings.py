@@ -7,7 +7,7 @@ with open('secret.txt') as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'apps.user',
     'apps.links',
     'apps.stats',
+    'public',
 ]
 
 AUTH_USER_MODEL = 'user.User'

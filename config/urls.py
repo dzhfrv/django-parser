@@ -9,4 +9,5 @@ v1_urls = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(v1_urls)),
+    path('', include('public.urls')),
 ]
