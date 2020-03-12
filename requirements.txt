@@ -1,14 +1,11 @@
 beautifulsoup4==4.8.2
-celery==4.3.0
 Django==3.0.3
 django-jsonfield==1.4.0
 djangorestframework==3.11.0
 djangorestframework-simplejwt==4.4.0
 django-rq==2.3.0
+gunicorn==20.0.4
+psycopg2==2.8.4
 redis==3.4.1
-rq==1.2.2
-psycopg2-binary==2.8.4
-certifi==2019.11.28
-chardet==3.0.4
-idna==2.9
 requests==2.23.0
+rq==1.2.2
