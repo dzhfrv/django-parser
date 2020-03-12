@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:5-alpine
+
+  db:
+    container_name: parser-db
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+  web:
+    container_name: parser-backend
+    env_file:
+      - ./.env
+    build: .
+    command: gunicorn config.wsgi --bind 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  rq:
+    container_name: parser-worker
+    build: .
+    command: python manage.py rqworker default
+    env_file:
+      - ./.env
+    depends_on:
+      - redis
